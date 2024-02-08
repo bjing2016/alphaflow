@@ -58,7 +58,7 @@ Training checkpoints (from which fine-tuning can be resumed) are available upon 
 
 1. Prepare a input CSV with an `name` and `sequence` entry for each row. See `splits/` for examples.
 2. If running an **AlphaFlow** model, prepare an MSA directory and place the alignments in `.a3m` format at the following paths: `{alignment_dir}/{name}/a3m/{name}.a3m`
-3. If running an **MD+Templates** model, the template PDB file needs to be converted to zipped numpy arrays. Prepare a templates directory and run `pythom -m scripts.prep_templates --pdb [PATH] --name [NAME] --outdir [DIR]` for each PDB file of interest. The PDB file should include only a single chain with no residue gaps. The specified name must match the name in the input CSV. 
+3. If running an **MD+Templates** model, the template PDB file needs to be converted to zipped numpy arrays. Prepare a templates directory and run `python -m scripts.prep_templates --pdb [PATH] --name [NAME] --outdir [DIR]` for each PDB file of interest. The PDB file should include only a single chain with no residue gaps. The specified name must match the name in the input CSV. 
 
 ### Running the model
 
