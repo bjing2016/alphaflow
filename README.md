@@ -4,7 +4,7 @@ AlphaFlow is a modified version of AlphaFold, fine-tuned with a flow matching ob
 * Experimental ensembles, i.e, potential conformational states as they would be deposited in the PDB
 * Molecular dynamics ensembles at physiological temperatures
 
-We also provide a similarly fine-tuned version of ESMFold called ESMFlow. Technical details and thorough benchmarking results can be found in our paper, [AlphaFold Meets Flow Matching for Generating Protein Ensembles](), by Bowen Jing, Bonnie Berger, Tommi Jaakkola. This repository contains all code, instructions and model weights necessary to run the method. If you have any questions, feel free to open an issue or reach out at bjing@mit.edu.
+We also provide a similarly fine-tuned version of ESMFold called ESMFlow. Technical details and thorough benchmarking results can be found in our paper, [AlphaFold Meets Flow Matching for Generating Protein Ensembles](https://arxiv.org/abs/2402.04845), by Bowen Jing, Bonnie Berger, Tommi Jaakkola. This repository contains all code, instructions and model weights necessary to run the method. If you have any questions, feel free to open an issue or reach out at bjing@mit.edu.
 
 
 ![imgs/ensembles.gif](imgs/ensembles.gif)
@@ -88,3 +88,15 @@ Additional command line arguments for either model:
 
 ## License
 MIT. Other licenses may apply to third-party source code noted in file headers.
+
+## Citation
+```
+@misc{jing2024alphafold,
+      title={AlphaFold Meets Flow Matching for Generating Protein Ensembles}, 
+      author={Bowen Jing and Bonnie Berger and Tommi Jaakkola},
+      year={2024},
+      eprint={2402.04845},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.BM}
+}
+```
