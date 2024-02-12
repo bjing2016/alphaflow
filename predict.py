@@ -86,11 +86,11 @@ def main():
             path = "esmfold_3B_v1.pt"
             model_data = torch.load(path, map_location='cpu')
             model_state = model_data["model"]
-            model.esmfold.load_state_dict(model_state, strict=False)
+            model.model.load_state_dict(model_state, strict=False)
             model = model.to(torch.float).cuda()
             
         elif args.mode == 'alphafold':
-            import_jax_weights_(model.esmfold, 'params_model_1.npz', version='model_3')
+            import_jax_weights_(model.model, 'params_model_1.npz', version='model_3')
             model = model.cuda()
         
     else:
