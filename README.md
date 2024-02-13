@@ -55,8 +55,10 @@ Training checkpoints (from which fine-tuning can be resumed) are available upon 
 
 ### Preparing input files
 
-1. Prepare a input CSV with an `name` and `sequence` entry for each row. See `splits/` for examples.
-2. If running an **AlphaFlow** model, prepare an MSA directory and place the alignments in `.a3m` format at the following paths: `{alignment_dir}/{name}/a3m/{name}.a3m`
+1. Prepare a input CSV with an `name` and `seqres` entry for each row. See `splits/atlas_test.csv` for examples.
+2. If running an **AlphaFlow** model, prepare an **MSA directory** and place the alignments in `.a3m` format at the following paths: `{alignment_dir}/{name}/a3m/{name}.a3m`. If you don't have the MSAs, there are two ways to generate them:
+    1. Query the ColabFold server with `python -m scripts.mmseqs_query --split [PATH] --outdir [DIR]`.
+    2. Download UniRef30 and ColabDB according to https://github.com/sokrypton/ColabFold/blob/main/setup_databases.sh and run `python -m scripts.mmseqs_search_helper --split [PATH] --db_dir [DIR] --outdir [DIR]`.
 3. If running an **MD+Templates** model, the template PDB file needs to be converted to zipped numpy arrays. Prepare a templates directory and run `python -m scripts.prep_templates --pdb [PATH] --name [NAME] --outdir [DIR]` for each PDB file of interest. The PDB file should include only a single chain with no residue gaps. The specified name must match the name in the input CSV. 
 
 ### Running the model
@@ -100,7 +102,7 @@ To download and preprocess the ATLAS MD trajectory dataset,
 Before running training, download the pretrained AlphaFold and ESMFold weights into the repository root via
 ```
 wget https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar
-unzip alphafold_params_2022-12-06.tar params_model_1.npz
+tar -xvf alphafold_params_2022-12-06.tar params_model_1.npz
 wget https://dl.fbaipublicfiles.com/fair-esm/models/esmfold_3B_v1.pt
 ```
 
@@ -127,7 +129,7 @@ where the ATLAS MSA and NPZ directories and AlphaFlow-PDB checkpoints are specif
 
 To instead train on ATLAS with templates, run with the additional arguments `--first_as_template --extra_input --lr 1e-4 --restore_weights_only --extra_input_prob 1.0`.
 
-**Distillation**: to distill a model, append `--distillation` and supply the `--ckpt [PATH]` of the model to be distilled. For PDB training, we recommend distilling with a shorter `--train_epoch_len 16000`. Note that `--self_cond_prob` and `--noise_prob` will be ignored and can be ommited.
+**Distillation**: to distill a model, append `--distillation` and supply the `--ckpt [PATH]` of the model to be distilled. For PDB training, we remove `--accumulate_grad 8` and recommend distilling with a shorter `--train_epoch_len 16000`. Note that `--self_cond_prob` and `--noise_prob` will be ignored and can be omitted.
 
 **ESMFlow**: run the same commands with `--mode esmfold` and `--train_cutoff 2020-05-01`.
 
