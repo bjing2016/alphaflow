@@ -15,7 +15,7 @@ pip install numpy==1.21.2 pandas==1.5.3
 pip install torch==1.12.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 pip install biopython==1.79 dm-tree==0.1.6 modelcif==0.7 ml-collections==0.1.0 scipy==1.7.1 absl-py einops
 pip install pytorch_lightning==2.0.4 fair-esm mdtraj 
-pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@5484c38'
+pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@103d037'
 ```
 We ran installation on a machine with CUDA 11.6 and have tested with A100 and A6000 GPUs.
 
