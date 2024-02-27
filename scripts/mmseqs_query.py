@@ -281,7 +281,7 @@ def run_mmseqs2(x, prefix, use_env=True, use_filter=True,
 
   return (a3m_lines, template_paths) if use_templates else a3m_lines
 
-df = pd.read_csv(args.split, index_col='name').iloc[:3]
+df = pd.read_csv(args.split, index_col='name')
 os.makedirs(args.outdir, exist_ok=True)
 
 msas = run_mmseqs2(list(df.seqres), prefix='/tmp/', user_agent='bjing2016/alphaflow')
