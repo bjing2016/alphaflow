@@ -11,14 +11,14 @@ import warnings, tqdm, os, io, logging
 import pandas as pd
 import numpy as np
 from multiprocessing import Pool
-from betafold.data.data_pipeline import DataPipeline
+from alphaflow.data.data_pipeline import DataPipeline
 from openfold.data import mmcif_parsing
 
 pipeline = DataPipeline(template_featurizer=None)
 
 def main():
-    dirs = os.listdir(args.data)
-    files = [os.listdir(f"{args.data}/{dir}") for dir in dirs]
+    dirs = os.listdir(args.mmcif_dir)
+    files = [os.listdir(f"{args.mmcif_dir}/{dir}") for dir in dirs]
     files = sum(files, [])
     if args.num_workers > 1:
         p = Pool(args.num_workers)
