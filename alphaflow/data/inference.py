@@ -52,8 +52,8 @@ class AlphaFoldCSVDataset:
         feats['seqres'] = item.seqres
         make_atom14_masks(feats)
 
-        pdb_id, chain = item.name.split('_')
         if self.mmcif_dir is not None:
+            pdb_id, chain = item.name.split('_')
             with open(f"{self.mmcif_dir}/{pdb_id[1:3]}/{pdb_id}.cif") as f:
                 feats['ref_prot'] = protein.from_mmcif_string(f.read(), chain, name=item.name)
                 
