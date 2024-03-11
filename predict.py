@@ -19,6 +19,7 @@ parser.add_argument('--no_diffusion', action='store_true', default=False)
 parser.add_argument('--self_cond', action='store_true', default=False)
 parser.add_argument('--noisy_first', action='store_true', default=False)
 parser.add_argument('--runtime_json', type=str, default=None)
+parser.add_argument('--no_overwrite', action='store_true', default=False)
 args = parser.parse_args()
 
 import torch, tqdm, os, wandb, json, time
@@ -106,6 +107,8 @@ def main():
     runtime = defaultdict(list)
     for i, item in enumerate(valset):
         if args.pdb_id and item['name'] not in args.pdb_id:
+            continue
+        if args.no_overwrite and os.path.exists(f'{args.outpdb}/{item["name"]}.pdb'):
             continue
         result = []
         for j in tqdm.trange(args.samples):
