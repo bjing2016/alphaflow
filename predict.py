@@ -1,7 +1,7 @@
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_csv', type=str, default='splits/transporters_only.csv')
-parser.add_argument('--templates_dir', type=str, default='./data')
+parser.add_argument('--templates_dir', type=str, default=None)
 parser.add_argument('--msa_dir', type=str, default='./alignment_dir')
 parser.add_argument('--mode', choices=['alphafold', 'esmfold'], default='alphafold')
 parser.add_argument('--samples', type=int, default=10)
@@ -14,7 +14,6 @@ parser.add_argument('--pdb_id', nargs='*', default=[])
 parser.add_argument('--subsample', type=int, default=None)
 parser.add_argument('--resample', action='store_true')
 parser.add_argument('--tmax', type=float, default=1.0)
-parser.add_argument('--templates', action='store_true')
 parser.add_argument('--no_diffusion', action='store_true', default=False)
 parser.add_argument('--self_cond', action='store_true', default=False)
 parser.add_argument('--noisy_first', action='store_true', default=False)
@@ -66,9 +65,8 @@ def main():
     }[args.mode](
         data_cfg,
         args.input_csv,
-        data_dir=args.templates_dir,
         msa_dir=args.msa_dir,
-        templates=args.templates,
+        templates_dir=args.templates_dir,
     )
     # valset[0]
     logger.info("Loading the model")

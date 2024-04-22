@@ -15,15 +15,14 @@ def seq_to_tensor(seq):
     return encoded
 
 class AlphaFoldCSVDataset:
-    def __init__(self, config, path, data_dir=None, mmcif_dir=None, msa_dir=None, templates=False):
+    def __init__(self, config, path, mmcif_dir=None, msa_dir=None, templates_dir=None):
         super().__init__()
-        self.pdb_chains = pd.read_csv(path, index_col='name')#.sort_index()
-        self.data_dir = data_dir
+        self.pdb_chains = pd.read_csv(path, index_col='name')
         self.msa_dir = msa_dir
         self.mmcif_dir = mmcif_dir
         self.data_pipeline = DataPipeline(template_featurizer=None)
         self.feature_pipeline = FeaturePipeline(config) 
-        self.templates = templates
+        self.templates_dir = templates_dir
         
     def __len__(self):
         return len(self.pdb_chains)
@@ -33,10 +32,11 @@ class AlphaFoldCSVDataset:
         item = self.pdb_chains.iloc[idx]
         
         mmcif_feats = self.data_pipeline.process_str(item.seqres, item.name)
-        if self.templates:
-            path = f"{self.data_dir}/{item.name}.npz"
-            mmcif_feats = dict(np.load(path, allow_pickle=True))
-            extra_all_atom_positions = mmcif_feats['all_atom_positions'][0]
+        if self.templates_dir:
+            path = f"{self.templates_dir}/{item.name}.pdb"
+            with open(path) as f:
+                prot = protein.from_pdb_string(f.read())
+            extra_all_atom_positions = prot.atom_positions.astype(np.float32)
             
         
         try: msa_id = item.msa_id
@@ -45,7 +45,7 @@ class AlphaFoldCSVDataset:
         data = {**mmcif_feats, **msa_features}
 
         feats = self.feature_pipeline.process_features(data, mode='predict') 
-        if self.templates:
+        if self.templates_dir:
             feats['extra_all_atom_positions'] = torch.from_numpy(extra_all_atom_positions)
         feats['pseudo_beta_mask'] = torch.ones(len(item.seqres))
         feats['name'] = item.name
@@ -60,11 +60,10 @@ class AlphaFoldCSVDataset:
         return feats
 
 class CSVDataset:
-    def __init__(self, config, path, mmcif_dir=None, data_dir=None, msa_dir=None, templates=False):
+    def __init__(self, config, path, mmcif_dir=None, msa_dir=None, templates_dir=None):
         super().__init__()
-        self.df = pd.read_csv(path, index_col='name')#.sort_index()
-        self.data_dir = data_dir
-        self.templates = templates
+        self.pdb_chains = pd.read_csv(path, index_col='name')
+        self.templates_dir = templates_dir
         
     def __len__(self):
         return len(self.df)
@@ -80,11 +79,12 @@ class CSVDataset:
             'seq_mask': torch.ones(len(row.seqres))
         }
         make_atom14_masks(batch)
-
-        if self.templates:
-            path = f"{self.data_dir}/{row.name}.npz"
-            mmcif_feats = dict(np.load(path, allow_pickle=True))
-            extra_all_atom_positions = mmcif_feats['all_atom_positions'][0]
+        
+        if self.templates_dir:
+            path = f"{self.templates_dir}/{item.name}.pdb"
+            with open(path) as f:
+                prot = protein.from_pdb_string(f.read())
+            extra_all_atom_positions = prot.atom_positions.astype(np.float32)
             batch['extra_all_atom_positions'] = torch.from_numpy(extra_all_atom_positions)
             
         return batch

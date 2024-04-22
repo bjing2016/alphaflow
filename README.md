@@ -6,7 +6,9 @@ AlphaFlow is a modified version of AlphaFold, fine-tuned with a flow matching ob
 
 We also provide a similarly fine-tuned version of ESMFold called ESMFlow. Technical details and thorough benchmarking results can be found in our paper, [AlphaFold Meets Flow Matching for Generating Protein Ensembles](https://arxiv.org/abs/2402.04845), by Bowen Jing, Bonnie Berger, Tommi Jaakkola. This repository contains all code, instructions and model weights necessary to run the method. If you have any questions, feel free to open an issue or reach out at bjing@mit.edu.
 
-![imgs/ensembles.gif](imgs/ensembles.gif)
+<p align="center">
+    <img src="imgs/6uof_A_animation.gif" width="600"/>
+</p>
 
 ## Installation
 In an environment with Python 3.9 (for example, `conda create -n [NAME] python=3.9`), run:
@@ -59,7 +61,7 @@ Training checkpoints (from which fine-tuning can be resumed) are available upon 
 2. If running an **AlphaFlow** model, prepare an **MSA directory** and place the alignments in `.a3m` format at the following paths: `{alignment_dir}/{name}/a3m/{name}.a3m`. If you don't have the MSAs, there are two ways to generate them:
     1. Query the ColabFold server with `python -m scripts.mmseqs_query --split [PATH] --outdir [DIR]`.
     2. Download UniRef30 and ColabDB according to https://github.com/sokrypton/ColabFold/blob/main/setup_databases.sh and run `python -m scripts.mmseqs_search_helper --split [PATH] --db_dir [DIR] --outdir [DIR]`.
-3. If running an **MD+Templates** model, the template PDB file needs to be converted to zipped numpy arrays. Prepare a templates directory and run `python -m scripts.prep_templates --pdb [PATH] --name [NAME] --outdir [DIR]` for each PDB file of interest. The PDB file should include only a single chain with no residue gaps. The specified name must match the name in the input CSV. 
+3. If running an **MD+Templates** model, place the template PDB files into a templates directory with filenames matching the names in the input CSV. The PDB files should include only a single chain with no residue gaps.
 
 ### Running the model
 
@@ -75,7 +77,7 @@ python predict.py --mode esmfold --input_csv [PATH] --weights [PATH] --samples [
 ```
 Additional command line arguments for either model:
 * Use the `--pdb_id` argument to select (one or more) rows in the CSV. If no argument is specified, inference is run on all rows.
-* If running the **MD  model with templates**, append `--templates --templates_dir [DIR]`.
+* If running the **MD  model with templates**, append `--templates_dir [DIR]`.
 * If running any **distilled** model, append the arguments `--noisy_first --no_diffusion`.
 * To truncate the inference process for increased precision and reduced diversity, append (for example) `--tmax 0.2 --steps 2`. The default inference settings correspond to `--tmax 1.0 --steps 10`. See Appendix B.1 in the paper for more details.
 

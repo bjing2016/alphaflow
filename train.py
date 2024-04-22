@@ -142,7 +142,7 @@ def main():
             import_jax_weights_(model.esmfold, 'params_model_1.npz', version='model_3')
             if not args.no_ema:
                 model.ema = ExponentialMovingAverage(
-                    model=model.esmfold, decay=config.ema.decay
+                    model=model.model, decay=config.ema.decay
                 ) # need to initialize EMA this way at the beginning
     
     if args.restore_weights_only:
@@ -150,7 +150,7 @@ def main():
         args.ckpt = None
         if not args.no_ema:
             model.ema = ExponentialMovingAverage(
-                model=model.esmfold, decay=config.ema.decay
+                model=model.model, decay=config.ema.decay
             ) # need to initialize EMA this way at the beginning
     
     
