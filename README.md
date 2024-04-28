@@ -140,7 +140,7 @@ To instead train on ATLAS with templates, run with the additional arguments `--f
 We provide the ensembles sampled from the model which were used for the analyses and results reported in the paper.
 
 ### AlphaFlow ensembles
-| Model|Version|Weights|
+| Model|Version|Samples|
 |:---|:--|:--|
 | AlphaFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_base_202402.zip |
 | AlphaFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_distilled_202402.zip |
@@ -150,7 +150,7 @@ We provide the ensembles sampled from the model which were used for the analyses
 | AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_distilled_202402.zip |
 
 ### ESMFlow ensembles
-| Model|Version|Weights|
+| Model|Version|Samples|
 |:---|:--|:--|
 | ESMFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_base_202402.zip |
 | ESMFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_distilled_202402.zip |
