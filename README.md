@@ -135,6 +135,29 @@ To instead train on ATLAS with templates, run with the additional arguments `--f
 
 **ESMFlow**: run the same commands with `--mode esmfold` and `--train_cutoff 2020-05-01`.
 
+## Ensembles
+
+We provide the ensembles sampled from the model which were used for the analyses and results reported in the paper.
+
+### AlphaFlow ensembles
+| Model|Version|Weights|
+|:---|:--|:--|
+| AlphaFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_base_202402.zip |
+| AlphaFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_distilled_202402.zip |
+| AlphaFlow-MD | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_base_202402.zip |
+| AlphaFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_distilled_202402.zip |
+| AlphaFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_base_202402.zip |
+| AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_distilled_202402.zip |
+
+### ESMFlow ensembles
+| Model|Version|Weights|
+|:---|:--|:--|
+| ESMFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_base_202402.zip |
+| ESMFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_distilled_202402.zip |
+| ESMFlow-MD | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_base_202402.zip |
+| ESMFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_distilled_202402.zip |
+| ESMFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_templates_base_202402.zip |
+| ESMFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_templates_distilled_202402.zip |
 
 ## License
 MIT. Other licenses may apply to third-party source code noted in file headers.
