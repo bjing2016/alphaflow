@@ -66,10 +66,10 @@ class CSVDataset:
         self.templates_dir = templates_dir
         
     def __len__(self):
-        return len(self.df)
+        return self.pdb_chains.shape[0]
         
     def __getitem__(self, idx):
-        row = self.df.iloc[idx]
+        row = self.pdb_chains.iloc[idx]
         batch = {
             'name': row.name,
             'seqres': row.seqres,
@@ -81,7 +81,7 @@ class CSVDataset:
         make_atom14_masks(batch)
         
         if self.templates_dir:
-            path = f"{self.templates_dir}/{item.name}.pdb"
+            path = f"{self.templates_dir}/{row.name}.pdb"
             with open(path) as f:
                 prot = protein.from_pdb_string(f.read())
             extra_all_atom_positions = prot.atom_positions.astype(np.float32)
