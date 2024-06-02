@@ -81,6 +81,14 @@ Additional command line arguments for either model:
 * If running any **distilled** model, append the arguments `--noisy_first --no_diffusion`.
 * To truncate the inference process for increased precision and reduced diversity, append (for example) `--tmax 0.2 --steps 2`. The default inference settings correspond to `--tmax 1.0 --steps 10`. See Appendix B.1 in the paper for more details.
 
+## Evaluation scripts
+
+Our ensemble evaluations may be reproduced via the following steps:
+1. Download the ATLAS dataset by runnig from `bash scripts/download_atlas.sh` from the desired root directory
+2. Prepare the ensemble directory with a PDB file for each ATLAS target, each with 250 structures (see zipped AlphaFlow ensembles below for examples). **Some results are not directly comparable for evaluations with a different number of structures.**
+3. Run `python -m scripts.analyze_ensembles --atlas_dir [DIR] --pdb_dir [DIR] --num_workers [N]`. This will produce an analysis file named `out.pkl` in the `pdb_dir`.
+4. Run `python -m scripts.print_analysis [PATH] [PATH] ...` with an arbitrary number of paths to `out.pkl` files. A formatted comparison table will be printed.
+
 ## Training 
 
 ### Downloading datasets
