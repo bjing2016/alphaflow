@@ -6,9 +6,22 @@ AlphaFlow is a modified version of AlphaFold, fine-tuned with a flow matching ob
 
 We also provide a similarly fine-tuned version of ESMFold called ESMFlow. Technical details and thorough benchmarking results can be found in our paper, [AlphaFold Meets Flow Matching for Generating Protein Ensembles](https://arxiv.org/abs/2402.04845), by Bowen Jing, Bonnie Berger, Tommi Jaakkola. This repository contains all code, instructions and model weights necessary to run the method. If you have any questions, feel free to open an issue or reach out at bjing@mit.edu.
 
+**June 2024 update:** We have trained a 12-layer version of AlphaFlow-MD+Templates (base and distilled) which runs 2.5x times faster than the 48-layer version at a [small loss in performance](assets/12l_md_templates.md). We recommend considering this model if reference structures (PDB or AlphaFold) are available and runtime is of high priority.
+
 <p align="center">
-    <img src="imgs/6uof_A_animation.gif" width="600"/>
+    <img src="assets/6uof_A_animation.gif" width="600"/>
 </p>
+
+## Table of Contents
+1. [Installation](#Installation)
+2. [Model weights](#Model-weights)
+3. [Running inference](#Running-inference)
+4. [Evaluation scripts](#Evaluation-scripts)
+5. [Training](#Training)
+6. [Ensembles](#Ensembles)
+7. [License](#License)
+8. [Citation](#Citation)
+
 
 ## Installation
 In an environment with Python 3.9 (for example, `conda create -n [NAME] python=3.9`), run:
@@ -19,7 +32,7 @@ pip install biopython==1.79 dm-tree==0.1.6 modelcif==0.7 ml-collections==0.1.0 s
 pip install pytorch_lightning==2.0.4 fair-esm mdtraj wandb
 pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@103d037'
 ```
-We ran installation on a machine with CUDA 11.6 and have tested with A100 and A6000 GPUs.
+We ran installation on a machine with CUDA 11.6 and have tested with A100 and A6000 GPUs. (See [this link](https://anaconda.org/nvidia/cuda) for instructions on how to install a specific CUDA version in Conda.)
 
 ## Model weights
 
@@ -31,6 +44,8 @@ We provide several versions of AlphaFlow (and similarly named versions of ESMFlo
 
 For all models, the **distilled** version runs significantly faster at the cost of some loss of accuracy (benchmarked in the paper).
 
+For AlphaFlow-MD+Templates, the **12l** versions have 12 instead of 48 Evoformer layers and run 2.5x times faster at a [small loss in performance](assets/12l_md_templates.md).
+
 ### AlphaFlow models
 | Model|Version|Weights|
 |:---|:--|:--|
@@ -40,6 +55,9 @@ For all models, the **distilled** version runs significantly faster at the cost 
 | AlphaFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_distilled_202402.pt |
 | AlphaFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_templates_base_202402.pt |
 | AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_templates_distilled_202402.pt |
+| AlphaFlow-MD+Templates | 12l-base | https://alphaflow.s3.amazonaws.com/params/alphaflow_12l_md_templates_base_202406.pt |
+| AlphaFlow-MD+Templates | 12l-distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_12l_md_templates_distilled_202406.pt |
+
 
 ### ESMFlow models
 | Model|Version|Weights|
@@ -156,6 +174,9 @@ We provide the ensembles sampled from the model which were used for the analyses
 | AlphaFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_distilled_202402.zip |
 | AlphaFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_base_202402.zip |
 | AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_distilled_202402.zip |
+| AlphaFlow-MD+Templates | 12l-base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_12l_md_templates_base_202406.zip |
+| AlphaFlow-MD+Templates | 12l-distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_12l_md_templates_distilled_202406.zip |
+
 
 ### ESMFlow ensembles
 | Model|Version|Samples|
