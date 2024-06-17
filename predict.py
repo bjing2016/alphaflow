@@ -1,4 +1,26 @@
 import argparse
+import torch
+import tqdm
+import os
+import wandb
+import json
+import time
+import pandas as pd
+import pytorch_lightning as pl
+import numpy as np
+from collections import defaultdict
+from alphaflow.data.data_modules import collate_fn
+from alphaflow.model.wrapper import AlphaFoldWrapper, ESMFoldWrapper
+from alphaflow.utils.tensor_utils import tensor_tree_map
+import alphaflow.utils.protein as protein
+from alphaflow.data.inference import AlphaFoldCSVDataset, CSVDataset
+from openfold.utils.import_weights import import_jax_weights_
+from alphaflow.config import model_config
+from alphaflow.utils.logging import get_logger
+
+logger = get_logger(__name__)
+torch.set_float32_matmul_precision("high")
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_csv', type=str, default='splits/transporters_only.csv')
 parser.add_argument('--templates_dir', type=str, default=None)
@@ -19,25 +41,8 @@ parser.add_argument('--self_cond', action='store_true', default=False)
 parser.add_argument('--noisy_first', action='store_true', default=False)
 parser.add_argument('--runtime_json', type=str, default=None)
 parser.add_argument('--no_overwrite', action='store_true', default=False)
+parser.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')
 args = parser.parse_args()
-
-import torch, tqdm, os, wandb, json, time
-import pandas as pd
-import pytorch_lightning as pl
-import numpy as np
-from collections import defaultdict
-from alphaflow.data.data_modules import collate_fn
-from alphaflow.model.wrapper import AlphaFoldWrapper, ESMFoldWrapper
-from alphaflow.utils.tensor_utils import tensor_tree_map
-import alphaflow.utils.protein as protein
-from alphaflow.data.inference import AlphaFoldCSVDataset, CSVDataset
-from collections import defaultdict
-from openfold.utils.import_weights import import_jax_weights_
-from alphaflow.config import model_config
-
-from alphaflow.utils.logging import get_logger
-logger = get_logger(__name__)
-torch.set_float32_matmul_precision("high")
 
 config = model_config(
     'initial_training',
@@ -58,7 +63,6 @@ if args.subsample: # https://elifesciences.org/articles/75751#s3
 
 @torch.no_grad()
 def main():
-
     valset = {
         'alphafold': AlphaFoldCSVDataset,
         'esmfold': CSVDataset,
@@ -68,34 +72,34 @@ def main():
         msa_dir=args.msa_dir,
         templates_dir=args.templates_dir,
     )
-    # valset[0]
     logger.info("Loading the model")
     model_class = {'alphafold': AlphaFoldWrapper, 'esmfold': ESMFoldWrapper}[args.mode]
 
+    device = torch.device(args.device)
+    
     if args.weights:
-        ckpt = torch.load(args.weights, map_location='cpu')
+        ckpt = torch.load(args.weights, map_location=device)
         model = model_class(**ckpt['hyper_parameters'], training=False)
         model.model.load_state_dict(ckpt['params'], strict=False)
-        model = model.cuda()
+        model = model.to(device)
         
-    
     elif args.original_weights:
         model = model_class(config, None, training=False)
         if args.mode == 'esmfold':
             path = "esmfold_3B_v1.pt"
-            model_data = torch.load(path, map_location='cpu')
+            model_data = torch.load(path, map_location=device)
             model_state = model_data["model"]
             model.model.load_state_dict(model_state, strict=False)
-            model = model.to(torch.float).cuda()
+            model = model.to(device)
             
         elif args.mode == 'alphafold':
             import_jax_weights_(model.model, 'params_model_1.npz', version='model_3')
-            model = model.cuda()
+            model = model.to(device)
         
     else:
-        model = model_class.load_from_checkpoint(args.ckpt, map_location='cpu')
+        model = model_class.load_from_checkpoint(args.ckpt, map_location=device)
         model.load_ema_weights()
-        model = model.cuda()
+        model = model.to(device)
     model.eval()
     
     logger.info("Model has been loaded")
@@ -114,14 +118,12 @@ def main():
                 item = valset[i] # resample MSA
             
             batch = collate_fn([item])
-            batch = tensor_tree_map(lambda x: x.cuda(), batch)  
+            batch = tensor_tree_map(lambda x: x.to(device), batch)  
             start = time.time()
             prots = model.inference(batch, as_protein=True, noisy_first=args.noisy_first,
                         no_diffusion=args.no_diffusion, schedule=schedule, self_cond=args.self_cond)
             runtime[item['name']].append(time.time() - start)
             result.append(prots[-1])
-            
-
 
         with open(f'{args.outpdb}/{item["name"]}.pdb', 'w') as f:
             f.write(protein.prots_to_pdb(result))
@@ -129,5 +131,7 @@ def main():
     if args.runtime_json:
         with open(args.runtime_json, 'w') as f:
             f.write(json.dumps(dict(runtime)))
+
 if __name__ == "__main__":
     main()
+
