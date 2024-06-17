@@ -100,6 +100,13 @@ def main():
         model = model_class.load_from_checkpoint(args.ckpt, map_location=device)
         model.load_ema_weights()
         model = model.to(device)
+    
+    # Ensure model is in float32 when running on CPU
+    if args.device == 'cpu':
+        model = model.float()
+    else:
+        model = model.to(device).half()
+        
     model.eval()
     
     logger.info("Model has been loaded")
