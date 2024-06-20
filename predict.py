@@ -41,7 +41,7 @@ parser.add_argument("--self_cond", action="store_true", default=False)
 parser.add_argument("--noisy_first", action="store_true", default=False)
 parser.add_argument("--runtime_json", type=str, default=None)
 parser.add_argument("--no_overwrite", action="store_true", default=False)
-parser.add_argument("--device", choices=["cpu", "cuda"], default="cuda")
+parser.add_argument("--device", default="cuda")
 args = parser.parse_args()
 
 config = model_config("initial_training", train=True, low_prec=True)
