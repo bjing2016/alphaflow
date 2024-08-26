@@ -18,6 +18,10 @@ from alphaflow.utils.misc import (
     collate_dense_tensors,
     output_to_pdb,
 )
+from alphaflow.utils.loss import (
+    compute_tm,
+    compute_predicted_aligned_error,
+)
 
 from .trunk import FoldingTrunk
 from .layers import GaussianFourierProjection
@@ -112,8 +116,8 @@ class ESMFold(nn.Module):
         self.trunk = FoldingTrunk(cfg.trunk)
 
         self.distogram_head = nn.Linear(c_z, self.distogram_bins)
-        # self.ptm_head = nn.Linear(c_z, self.distogram_bins)
-        # self.lm_head = nn.Linear(c_s, self.n_tokens_embed)
+        self.ptm_head = nn.Linear(c_z, self.distogram_bins)
+        self.lm_head = nn.Linear(c_s, self.n_tokens_embed)
         self.lddt_bins = 50
         
         self.lddt_head = PerResidueLDDTCaPredictor(
@@ -325,7 +329,6 @@ class ESMFold(nn.Module):
         structure["plddt"] = 100 * plddt
         # we predict plDDT between 0 and 1, scale to be between 0 and 100.
 
-        '''
         ptm_logits = self.ptm_head(structure["s_z"])
         seqlen = mask.type(torch.int64).sum(1)
         structure["tm_logits"] = ptm_logits
@@ -344,7 +347,6 @@ class ESMFold(nn.Module):
                 ptm_logits, max_bin=31, no_bins=self.distogram_bins
             )
         )
-        '''
 
         structure["final_atom_positions"] = atom14_to_atom37(structure["sm"]["positions"][-1], batch)
         structure["final_affine_tensor"] = structure["sm"]["frames"][-1]

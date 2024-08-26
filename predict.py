@@ -21,8 +21,9 @@ parser.add_argument('--runtime_json', type=str, default=None)
 parser.add_argument('--no_overwrite', action='store_true', default=False)
 args = parser.parse_args()
 
-import torch, tqdm, os, wandb, json, time
+import torch, tqdm, os, wandb, json, time, pickle, gzip, re, io, string
 import pandas as pd
+from biopandas.pdb import PandasPdb
 import pytorch_lightning as pl
 import numpy as np
 from collections import defaultdict
@@ -109,6 +110,7 @@ def main():
         if args.no_overwrite and os.path.exists(f'{args.outpdb}/{item["name"]}.pdb'):
             continue
         result = []
+        output = []
         for j in tqdm.trange(args.samples):
             if args.subsample or args.resample:
                 item = valset[i] # resample MSA
@@ -116,15 +118,55 @@ def main():
             batch = collate_fn([item])
             batch = tensor_tree_map(lambda x: x.cuda(), batch)  
             start = time.time()
-            prots = model.inference(batch, as_protein=True, noisy_first=args.noisy_first,
+            prots, outputs = model.inference(batch, as_protein=False, noisy_first=args.noisy_first,
                         no_diffusion=args.no_diffusion, schedule=schedule, self_cond=args.self_cond)
             runtime[item['name']].append(time.time() - start)
             result.append(prots[-1])
+
+            dat = tensor_tree_map(lambda x: x.cpu().numpy(), outputs[-1])
+            cols = ['name', 'seqres', 'ptm', 
+                    'predicted_aligned_error', 'max_predicted_aligned_error']
+            dat = {col: dat[col] for col in cols}
+            output.append(dat)
+      
+        # with open(f'{args.outpdb}/{item["name"]}.pdb', 'w') as f:
+        #     f.write(protein.prots_to_pdb(result))      
+
+        pdbs = PandasPdb().read_pdb_from_list(protein.prots_to_pdb(result).splitlines(True))
+        a = pdbs.df["ATOM"].residue_number.unique()
+        seq = np.split(a, np.where(np.diff(a) != 1)[0]+1)
+        
+        chain_a = pdbs.df["ATOM"][pdbs.df["ATOM"]['residue_number']<=seq[0][-1]].copy()
+        chain_a['chain_id'] = 'A'
+        
+        chains = []
+        for i in range(len(seq)-1):
+            chain_id = list(string.ascii_uppercase)[i+1]
+            chain = pdbs.df["ATOM"][pdbs.df["ATOM"]['residue_number']>seq[i][-1]].copy()
+            chain['chain_id'] = chain_id
+            chain['residue_number'] = chain['residue_number'] - seq[i][-1] -1
+            chains.append(chain)
             
+        chains = pd.concat(chains)
+        pdbs.df["ATOM"] = pd.concat([chain_a,chains]).sort_index()
+        pdbs.to_pdb(path=f'{args.outpdb}/{item["name"]}.pdb', gz=False, append_newline=True)
 
-
-        with open(f'{args.outpdb}/{item["name"]}.pdb', 'w') as f:
-            f.write(protein.prots_to_pdb(result))
+            
+        output = pd.DataFrame(output)
+        output['name'] = output['name'].apply(lambda x: x[0])
+        output['ptm'] = output['ptm'].apply(lambda x: x[0])
+        # output['max_predicted_aligned_error'] = output.max_predicted_aligned_error.apply(lambda x: x[0])       
+        output['linker'] = output.seqres.apply(lambda x: [m.start() for m in re.finditer(':', x[0])])
+        output['seqres'] = output.seqres.apply(lambda x: x[0].split(':'))
+        output['predicted_aligned_error'] = output.predicted_aligned_error.apply(lambda x: x[0])
+        output['pae'] = output[['predicted_aligned_error','linker']].values.tolist()
+        output['pae'] = output['pae'].apply(lambda x: [np.delete(i, x[1]) for i in x[0]])
+        output['pae'] = output[['pae','linker']].values.tolist()
+        output['pae'] = output['pae'].apply(lambda x: [i for j, i in enumerate(x[0]) if j not in x[1]])
+        output['predicted_aligned_error'] = output['pae'].apply(lambda x: np.array(x))
+        output.drop(['pae','linker'], axis=1, inplace=True)
+        output.to_pickle(f'{args.outpdb}/{item["name"]}.pkl.gz', protocol=4)
+        
 
     if args.runtime_json:
         with open(args.runtime_json, 'w') as f:
