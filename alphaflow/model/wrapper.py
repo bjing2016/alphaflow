@@ -388,10 +388,7 @@ class ModelWrapper(pl.LightningModule):
                 prots.extend(protein.output_to_protein(output))
             return prots
         else:
-            prots = []
-            for output in outputs:
-                prots.extend(protein.output_to_protein(output))
-            return prots, outputs
+            return outputs
     
         
     def _compute_validation_metrics(self, 
