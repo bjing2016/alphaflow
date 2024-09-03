@@ -24,15 +24,27 @@ We also provide a similarly fine-tuned version of ESMFold called ESMFlow. Techni
 
 
 ## Installation
-In an environment with Python 3.9 (for example, `conda create -n [NAME] python=3.9`), run:
+In an environment with Python 3.9 (for example, `conda create -n alphaflow python=3.9`), run:
 ```
 pip install numpy==1.21.2 pandas==1.5.3
 pip install torch==1.12.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 pip install biopython==1.79 dm-tree==0.1.6 modelcif==0.7 ml-collections==0.1.0 scipy==1.7.1 absl-py einops
-pip install pytorch_lightning==2.0.4 fair-esm mdtraj wandb
+pip install pytorch_lightning==2.0.4 fair-esm mdtraj==1.9.9 wandb
 pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@103d037'
 ```
-We ran installation on a machine with CUDA 11.6 and have tested with A100 and A6000 GPUs. (See [this link](https://anaconda.org/nvidia/cuda) for instructions on how to install a specific CUDA version in Conda.)
+The OpenFold installation requires CUDA 11. If the system has the wrong version, you can install CUDA 11 in the Conda environment:
+```
+conda install nvidia/label/cuda-11.8.0::cuda
+conda install nvidia/label/cuda-11.8.0::cuda-cudart-dev
+conda install nvidia/label/cuda-11.8.0::libcusparse-dev
+conda install nvidia/label/cuda-11.8.0::libcusolver-dev
+conda install nvidia/label/cuda-11.8.0::libcublas-dev
+ln -s $CONDA_PREFIX/lib/libcudart_static.a $CONDA_PREFIX/lib/libcudart.a
+```
+Then install OpenFold:
+```
+CUDA_HOME=$CONDA_PREFIX pip install 'openfold @ git+https://github.com/aqlaboratory/openfold.git@103d037'
+```
 
 ## Model weights
 
@@ -193,12 +205,10 @@ MIT. Other licenses may apply to third-party source code noted in file headers.
 
 ## Citation
 ```
-@misc{jing2024alphafold,
-      title={AlphaFold Meets Flow Matching for Generating Protein Ensembles}, 
-      author={Bowen Jing and Bonnie Berger and Tommi Jaakkola},
-      year={2024},
-      eprint={2402.04845},
-      archivePrefix={arXiv},
-      primaryClass={q-bio.BM}
+@inproceedings{jing2024alphafold,
+  title={AlphaFold Meets Flow Matching for Generating Protein Ensembles},
+  author={Jing, Bowen and Berger, Bonnie and Jaakkola, Tommi},
+  year={2024},
+  booktitle={Forty-first International Conference on Machine Learning}
 }
 ```
