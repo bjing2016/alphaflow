@@ -61,25 +61,25 @@ For AlphaFlow-MD+Templates, the **12l** versions have 12 instead of 48 Evoformer
 ### AlphaFlow models
 | Model|Version|Weights|
 |:---|:--|:--|
-| AlphaFlow-PDB | base | https://alphaflow.s3.amazonaws.com/params/alphaflow_pdb_base_202402.pt |
-| AlphaFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_pdb_distilled_202402.pt |
-| AlphaFlow-MD | base | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_base_202402.pt |
-| AlphaFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_distilled_202402.pt |
-| AlphaFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_templates_base_202402.pt |
-| AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_md_templates_distilled_202402.pt |
-| AlphaFlow-MD+Templates | 12l-base | https://alphaflow.s3.amazonaws.com/params/alphaflow_12l_md_templates_base_202406.pt |
-| AlphaFlow-MD+Templates | 12l-distilled | https://alphaflow.s3.amazonaws.com/params/alphaflow_12l_md_templates_distilled_202406.pt |
+| AlphaFlow-PDB | base | https://storage.googleapis.com/alphaflow/params/alphaflow_pdb_base_202402.pt |
+| AlphaFlow-PDB | distilled | https://storage.googleapis.com/alphaflow/params/alphaflow_pdb_distilled_202402.pt |
+| AlphaFlow-MD | base | https://storage.googleapis.com/alphaflow/params/alphaflow_md_base_202402.pt |
+| AlphaFlow-MD | distilled | https://storage.googleapis.com/alphaflow/params/alphaflow_md_distilled_202402.pt |
+| AlphaFlow-MD+Templates | base | https://storage.googleapis.com/alphaflow/params/alphaflow_md_templates_base_202402.pt |
+| AlphaFlow-MD+Templates | distilled | https://storage.googleapis.com/alphaflow/params/alphaflow_md_templates_distilled_202402.pt |
+| AlphaFlow-MD+Templates | 12l-base | https://storage.googleapis.com/alphaflow/params/alphaflow_12l_md_templates_base_202406.pt |
+| AlphaFlow-MD+Templates | 12l-distilled | https://storage.googleapis.com/alphaflow/params/alphaflow_12l_md_templates_distilled_202406.pt |
 
 
 ### ESMFlow models
 | Model|Version|Weights|
 |:---|:--|:--|
-| ESMFlow-PDB | base | https://alphaflow.s3.amazonaws.com/params/esmflow_pdb_base_202402.pt |
-| ESMFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/params/esmflow_pdb_distilled_202402.pt |
-| ESMFlow-MD | base | https://alphaflow.s3.amazonaws.com/params/esmflow_md_base_202402.pt |
-| ESMFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/params/esmflow_md_distilled_202402.pt |
-| ESMFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/params/esmflow_md_templates_base_202402.pt |
-| ESMFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/params/esmflow_md_templates_distilled_202402.pt |
+| ESMFlow-PDB | base | https://storage.googleapis.com/alphaflow/params/esmflow_pdb_base_202402.pt |
+| ESMFlow-PDB | distilled | https://storage.googleapis.com/alphaflow/params/esmflow_pdb_distilled_202402.pt |
+| ESMFlow-MD | base | https://storage.googleapis.com/alphaflow/params/esmflow_md_base_202402.pt |
+| ESMFlow-MD | distilled | https://storage.googleapis.com/alphaflow/params/esmflow_md_distilled_202402.pt |
+| ESMFlow-MD+Templates | base | https://storage.googleapis.com/alphaflow/params/esmflow_md_templates_base_202402.pt |
+| ESMFlow-MD+Templates | distilled | https://storage.googleapis.com/alphaflow/params/esmflow_md_templates_distilled_202402.pt |
 
 Training checkpoints (from which fine-tuning can be resumed) are available upon request; please reach out if you'd like to collaborate!
 
@@ -180,25 +180,25 @@ We provide the ensembles sampled from the model which were used for the analyses
 ### AlphaFlow ensembles
 | Model|Version|Samples|
 |:---|:--|:--|
-| AlphaFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_base_202402.zip |
-| AlphaFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_pdb_distilled_202402.zip |
-| AlphaFlow-MD | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_base_202402.zip |
-| AlphaFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_distilled_202402.zip |
-| AlphaFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_base_202402.zip |
-| AlphaFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_md_templates_distilled_202402.zip |
-| AlphaFlow-MD+Templates | 12l-base | https://alphaflow.s3.amazonaws.com/samples/alphaflow_12l_md_templates_base_202406.zip |
-| AlphaFlow-MD+Templates | 12l-distilled | https://alphaflow.s3.amazonaws.com/samples/alphaflow_12l_md_templates_distilled_202406.zip |
+| AlphaFlow-PDB | base | https://storage.googleapis.com/alphaflow/samples/alphaflow_pdb_base_202402.zip |
+| AlphaFlow-PDB | distilled | https://storage.googleapis.com/alphaflow/samples/alphaflow_pdb_distilled_202402.zip |
+| AlphaFlow-MD | base | https://storage.googleapis.com/alphaflow/samples/alphaflow_md_base_202402.zip |
+| AlphaFlow-MD | distilled | https://storage.googleapis.com/alphaflow/samples/alphaflow_md_distilled_202402.zip |
+| AlphaFlow-MD+Templates | base | https://storage.googleapis.com/alphaflow/samples/alphaflow_md_templates_base_202402.zip |
+| AlphaFlow-MD+Templates | distilled | https://storage.googleapis.com/alphaflow/samples/alphaflow_md_templates_distilled_202402.zip |
+| AlphaFlow-MD+Templates | 12l-base | https://storage.googleapis.com/alphaflow/samples/alphaflow_12l_md_templates_base_202406.zip |
+| AlphaFlow-MD+Templates | 12l-distilled | https://storage.googleapis.com/alphaflow/samples/alphaflow_12l_md_templates_distilled_202406.zip |
 
 
 ### ESMFlow ensembles
 | Model|Version|Samples|
 |:---|:--|:--|
-| ESMFlow-PDB | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_base_202402.zip |
-| ESMFlow-PDB | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_pdb_distilled_202402.zip |
-| ESMFlow-MD | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_base_202402.zip |
-| ESMFlow-MD | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_distilled_202402.zip |
-| ESMFlow-MD+Templates | base | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_templates_base_202402.zip |
-| ESMFlow-MD+Templates | distilled | https://alphaflow.s3.amazonaws.com/samples/esmflow_md_templates_distilled_202402.zip |
+| ESMFlow-PDB | base | https://storage.googleapis.com/alphaflow/samples/esmflow_pdb_base_202402.zip |
+| ESMFlow-PDB | distilled | https://storage.googleapis.com/alphaflow/samples/esmflow_pdb_distilled_202402.zip |
+| ESMFlow-MD | base | https://storage.googleapis.com/alphaflow/samples/esmflow_md_base_202402.zip |
+| ESMFlow-MD | distilled | https://storage.googleapis.com/alphaflow/samples/esmflow_md_distilled_202402.zip |
+| ESMFlow-MD+Templates | base | https://storage.googleapis.com/alphaflow/samples/esmflow_md_templates_base_202402.zip |
+| ESMFlow-MD+Templates | distilled | https://storage.googleapis.com/alphaflow/samples/esmflow_md_templates_distilled_202402.zip |
 
 ## License
 MIT. Other licenses may apply to third-party source code noted in file headers.
