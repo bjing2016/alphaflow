@@ -73,7 +73,7 @@ def main():
     model_class = {'alphafold': AlphaFoldWrapper, 'esmfold': ESMFoldWrapper}[args.mode]
 
     if args.weights:
-        ckpt = torch.load(args.weights, map_location='cpu')
+        ckpt = torch.load(args.weights, map_location='cpu', weights_only=False) # Compatible with pytorch = 2.6.0
         model = model_class(**ckpt['hyper_parameters'], training=False)
         model.model.load_state_dict(ckpt['params'], strict=False)
         model = model.cuda()
