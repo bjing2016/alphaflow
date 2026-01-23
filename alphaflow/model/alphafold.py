@@ -70,12 +70,26 @@ class AlphaFold(nn.Module):
             self.extra_msa_embedder = ExtraMSAEmbedder(
                 **self.extra_msa_config["extra_msa_embedder"],
             )
+            # Add default values for new OpenFold parameters if missing (for backward compatibility)
+            extra_msa_stack_config = dict(self.extra_msa_config["extra_msa_stack"])
+            if "opm_first" not in extra_msa_stack_config:
+                extra_msa_stack_config["opm_first"] = False
+            if "fuse_projection_weights" not in extra_msa_stack_config:
+                extra_msa_stack_config["fuse_projection_weights"] = False
             self.extra_msa_stack = ExtraMSAStack(
-                **self.extra_msa_config["extra_msa_stack"],
+                **extra_msa_stack_config,
             )
         
+        # Add default values for new OpenFold parameters if missing (for backward compatibility)
+        evoformer_stack_config = dict(self.config["evoformer_stack"])
+        if "no_column_attention" not in evoformer_stack_config:
+            evoformer_stack_config["no_column_attention"] = False
+        if "opm_first" not in evoformer_stack_config:
+            evoformer_stack_config["opm_first"] = False
+        if "fuse_projection_weights" not in evoformer_stack_config:
+            evoformer_stack_config["fuse_projection_weights"] = False
         self.evoformer = EvoformerStack(
-            **self.config["evoformer_stack"],
+            **evoformer_stack_config,
         )
         self.structure_module = StructureModule(
             **self.config["structure_module"],
@@ -283,6 +297,7 @@ class AlphaFold(nn.Module):
                     a, z,
                     msa_mask=feats["extra_msa_mask"].to(dtype=m.dtype),
                     chunk_size=self.globals.chunk_size,
+                    use_deepspeed_evo_attention=False,
                     use_lma=self.globals.use_lma,
                     pair_mask=pair_mask.to(dtype=m.dtype),
                     inplace_safe=inplace_safe,
@@ -313,6 +328,7 @@ class AlphaFold(nn.Module):
                 msa_mask=msa_mask.to(dtype=m.dtype),
                 pair_mask=pair_mask.to(dtype=z.dtype),
                 chunk_size=self.globals.chunk_size,
+                use_deepspeed_evo_attention=False,
                 use_lma=self.globals.use_lma,
                 use_flash=self.globals.use_flash,
                 inplace_safe=inplace_safe,

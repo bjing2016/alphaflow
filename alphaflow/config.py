@@ -487,6 +487,8 @@ config = mlc.ConfigDict(
                     "inf": 1e9,
                     "eps": eps,  # 1e-10,
                     "ckpt": blocks_per_ckpt is not None,
+                    "opm_first": False,
+                    "fuse_projection_weights": False,
                 },
                 "enabled": True,
             },
@@ -559,6 +561,9 @@ config = mlc.ConfigDict(
                 "tune_chunk_size": tune_chunk_size,
                 "inf": 1e9,
                 "eps": eps,  # 1e-10,
+                "no_column_attention": False,
+                "opm_first": False,
+                "fuse_projection_weights": False,
             },
             "structure_module": {
                 "c_s": c_s,

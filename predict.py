@@ -18,10 +18,12 @@ parser.add_argument('--no_diffusion', action='store_true', default=False)
 parser.add_argument('--self_cond', action='store_true', default=False)
 parser.add_argument('--noisy_first', action='store_true', default=False)
 parser.add_argument('--runtime_json', type=str, default=None)
+parser.add_argument('--sample_idx', type=int, default=None)
 parser.add_argument('--no_overwrite', action='store_true', default=False)
 args = parser.parse_args()
 
 import torch, tqdm, os, wandb, json, time
+import re
 import pandas as pd
 import pytorch_lightning as pl
 import numpy as np
@@ -72,10 +74,66 @@ def main():
     logger.info("Loading the model")
     model_class = {'alphafold': AlphaFoldWrapper, 'esmfold': ESMFoldWrapper}[args.mode]
 
+    def convert_alphaflow_checkpoint_to_new_openfold(old_state_dict):
+        """
+        Converts AlphaFlow checkpoint (old OpenFold 103d037) to new OpenFold format.
+        """
+        new_state_dict = {}
+        
+        pair_modules = ['tri_mul_out', 'tri_mul_in', 'tri_att_start', 'tri_att_end', 'pair_transition']
+        
+        for key, value in old_state_dict.items():
+            new_key = key
+            
+            # 1. Evoformer blocks: .core.{pair_module} -> .pair_stack.{pair_module}
+            for mod in pair_modules:
+                if re.search(rf'evoformer\.blocks\.\d+\.core\.{mod}\.', new_key):
+                    new_key = re.sub(
+                        rf'(evoformer\.blocks\.\d+)\.core\.({mod}\.)',
+                        r'\1.pair_stack.\2',
+                        new_key
+                    )
+                    break
+            
+            # 2. Evoformer blocks: .core.{msa_module} -> .{msa_module} (remove .core.)
+            if '.core.' in new_key and 'evoformer.blocks' in new_key:
+                new_key = new_key.replace('.core.', '.')
+
+            for mod in pair_modules:
+                if re.search(rf'extra_msa_stack\.blocks\.\d+\.core\.{mod}\.', new_key):
+                    new_key = re.sub(
+                        rf'(extra_msa_stack\.blocks\.\d+)\.core\.({mod}\.)',
+                        r'\1.pair_stack.\2',
+                        new_key
+                    )
+                    break
+            
+            # 3. Extra MSA stack: remove .core. entirely
+            if 'extra_msa_stack.blocks' in new_key and '.core.' in new_key:
+                new_key = new_key.replace('.core.', '.')
+            
+            # 4. IPA point projections: add .linear.
+            if 'structure_module.ipa.linear_q_points.' in new_key or \
+            'structure_module.ipa.linear_kv_points.' in new_key:
+                # linear_q_points.weight -> linear_q_points.linear.weight
+                new_key = re.sub(
+                    r'(linear_[qk]v?_points)\.(weight|bias)',
+                    r'\1.linear.\2',
+                    new_key
+                )
+            
+            new_state_dict[new_key] = value
+        
+        return new_state_dict
+
+    
     if args.weights:
         ckpt = torch.load(args.weights, map_location='cpu', weights_only=False) # Compatible with pytorch = 2.6.0
         model = model_class(**ckpt['hyper_parameters'], training=False)
-        model.model.load_state_dict(ckpt['params'], strict=False)
+        converted_params = convert_alphaflow_checkpoint_to_new_openfold(ckpt['params'])
+        missing, unexpected = model.model.load_state_dict(converted_params, strict=False)
+        logger.info(f"Missing keys: {missing}")
+        logger.info(f"Unexpected keys: {unexpected}")
         model = model.cuda()
         
     
@@ -103,6 +161,10 @@ def main():
     results = defaultdict(list)
     os.makedirs(args.outpdb, exist_ok=True)
     runtime = defaultdict(list)
+    if args.sample_idx: # select one
+        valset = [valset[args.sample_idx]]
+        logger.info(f"Selected sample {args.sample_idx}")
+
     for i, item in enumerate(valset):
         if args.pdb_id and item['name'] not in args.pdb_id:
             continue
@@ -120,8 +182,6 @@ def main():
                         no_diffusion=args.no_diffusion, schedule=schedule, self_cond=args.self_cond)
             runtime[item['name']].append(time.time() - start)
             result.append(prots[-1])
-            
-
 
         with open(f'{args.outpdb}/{item["name"]}.pdb', 'w') as f:
             f.write(protein.prots_to_pdb(result))
