@@ -69,6 +69,10 @@ def output_to_protein(output):
         seqres = ''.join(
             [residue_constants.restypes[idx] if idx != unk_idx else "X" for idx in output["aatype"][i]]
         )
+        # Provide default chain_index if not present (all zeros for single chain)
+        num_res = output["aatype"][i].shape[0]
+        chain_index = output["chain_index"][i] if "chain_index" in output else np.zeros(num_res, dtype=np.int32)
+        
         pred = Protein(
             name=output['name'][i],
             aatype=output["aatype"][i],
@@ -77,7 +81,7 @@ def output_to_protein(output):
             atom_mask=final_atom_mask[i],
             residue_index=output["residue_index"][i] + 1,
             b_factors=np.repeat(output["plddt"][i][...,None], residue_constants.atom_type_num, axis=-1),
-            chain_index=output["chain_index"][i] if "chain_index" in output else None,
+            chain_index=chain_index,
         )
         pdbs.append(pred)
     return pdbs
@@ -85,6 +89,7 @@ def output_to_protein(output):
 def from_dict(prot):
     name = prot['domain_name'].item().decode(encoding='utf-8')
     seq = prot['sequence'].item().decode(encoding='utf-8')
+    num_res = len(seq)
     return Protein(
         name=name,
         aatype=np.nonzero(prot["aatype"])[1],
@@ -92,7 +97,8 @@ def from_dict(prot):
         seqres=seq,
         atom_mask=prot["all_atom_mask"],
         residue_index=prot['residue_index'] + 1,
-        b_factors=np.zeros((len(seq), 37))
+        b_factors=np.zeros((num_res, 37)),
+        chain_index=np.zeros(num_res, dtype=np.int32),
     )
 
 def from_pdb_string(pdb_string, name=''):
@@ -133,6 +139,7 @@ def from_mmcif_string(mmcif_string, chain, name='', is_author_chain=False):
         atom_mask=atom_mask,
         residue_index=np.arange(L) + 1,
         b_factors=np.zeros((L, 37)), # maybe replace 37 later
+        chain_index=np.zeros(L, dtype=np.int32),
     )
     return prot
 
@@ -159,10 +166,16 @@ def global_metrics(ref_prot, pred_prot, lddt=False, symmetric=False):
 def prots_to_pdb(prots):
     ss = ''
     for i, prot in enumerate(prots):
-        ss += f'MODEL {i}\n'
+        # PDB format: MODEL in columns 1-5, model number right-justified in columns 6-10 (starting at 1)
+        model_num = i + 1
+        # ss += f'MODEL{model_num:>5}\n'
+        # Ensure chain_index is set (OpenFold's to_pdb requires it)
+        if prot.chain_index is None:
+            num_res = prot.atom_positions.shape[0]
+            prot.chain_index = np.zeros(num_res, dtype=np.int32)
         prot = to_pdb(prot)
         ss += '\n'.join(prot.split('\n')[1:-2])
-        ss += '\nENDMDL\n'
+        #ss += '\nENDMDL\n'
     return ss
     
 def align_residue_numbering(prot1, prot2, mask=False):

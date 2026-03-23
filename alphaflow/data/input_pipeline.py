@@ -205,8 +205,9 @@ def nonensembled_transform_fns(common_cfg, mode_cfg):
     max_extra_msa = mode_cfg.max_extra_msa
 
     msa_seed = None
-    if(not common_cfg.resample_msa_in_recycling):
-        msa_seed = ensemble_seed
+    # Note: ensemble_seed was referenced but not defined - using None for now
+    # if(not common_cfg.resample_msa_in_recycling):
+    #     msa_seed = ensemble_seed
     
     transforms.append(
         data_transforms.sample_msa(
@@ -222,7 +223,7 @@ def nonensembled_transform_fns(common_cfg, mode_cfg):
         # the masked locations and secret corrupted locations.
         transforms.append(
             data_transforms.make_masked_msa(
-                common_cfg.masked_msa, mode_cfg.masked_msa_replace_fraction
+                common_cfg.masked_msa, mode_cfg.masked_msa_replace_fraction, seed=msa_seed
             )
         )
 

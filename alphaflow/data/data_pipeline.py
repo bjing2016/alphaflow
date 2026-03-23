@@ -433,9 +433,15 @@ class DataPipeline:
                 ext = os.path.splitext(name)[-1]
 
                 if(ext == ".a3m"):
-                    msa, deletion_matrix = parsers.parse_a3m(
+                    msa_obj = parsers.parse_a3m(
                         read_msa(start, size)
                     )
+                    # Handle both old tuple return and new Msa object return
+                    if isinstance(msa_obj, tuple):
+                        msa, deletion_matrix = msa_obj
+                    else:
+                        msa = msa_obj.sequences
+                        deletion_matrix = msa_obj.deletion_matrix
                     data = {"msa": msa, "deletion_matrix": deletion_matrix}
                 elif(ext == ".sto"):
                     msa, deletion_matrix, _ = parsers.parse_stockholm(
@@ -463,7 +469,13 @@ class DataPipeline:
 
                 if(ext == ".a3m"):
                     with open(path, "r") as fp:
-                        msa, deletion_matrix = parsers.parse_a3m(fp.read())
+                        msa_obj = parsers.parse_a3m(fp.read())
+                    # Handle both old tuple return and new Msa object return
+                    if isinstance(msa_obj, tuple):
+                        msa, deletion_matrix = msa_obj
+                    else:
+                        msa = msa_obj.sequences
+                        deletion_matrix = msa_obj.deletion_matrix
                     data = {"msa": msa, "deletion_matrix": deletion_matrix}
                 elif(ext == ".sto"):
                     with open(path, "r") as fp:
