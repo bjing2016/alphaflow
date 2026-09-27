@@ -1,6 +1,6 @@
 # AlphaFlow
 
-AlphaFlow is a modified version of AlphaFold, fine-tuned with a flow matching objective, designed for generative modeling of protein conformational ensembles. In particular, AlphaFlow aims to model:
+AlphaFlow is a modified version of AlphaFold, fine-tuned with a flow matching objective, designed for generative modeling of protein conformational ensembles. Optional companion for the original Jumper et al. Nature paper: [Read online](https://webeditions.page/works/highly-accurate-protein-structure-prediction-with-alphafold/?via=placement:1f15be4d0d42ede513dd) (source PDF unchanged). In particular, AlphaFlow aims to model:
 * Experimental ensembles, i.e, potential conformational states as they would be deposited in the PDB
 * Molecular dynamics ensembles at physiological temperatures
 
